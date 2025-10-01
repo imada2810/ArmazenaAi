@@ -1,166 +1,145 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function CadastroProduto() {
-  const [produto, setProduto] = useState({
-    nome: "",
-    precoCusto: "",
-    precoFinal: ""
-  });
-
+  const [produto, setProduto] = useState({ nome: "", precoCusto: "", precoFinal: "" });
   const [produtos, setProdutos] = useState([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("produtos");
-    if (saved) setProdutos(JSON.parse(saved));
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduto((p) => ({ ...p, [name]: value }));
-  };
-
-  const parseNumber = (v) => {
-    if (!v) return null;
-    const n = parseFloat(String(v).replace(",", "."));
-    return Number.isNaN(n) ? null : n;
+    setProduto({ ...produto, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const custo = parseNumber(produto.precoCusto);
-    const final = parseNumber(produto.precoFinal);
-
-    if (!produto.nome.trim()) { alert("Preencha o nome do produto."); return; }
-    if (custo === null) { alert("Preço de custo inválido."); return; }
-    if (final === null) { alert("Preço final inválido."); return; }
-
-    const novo = {
-      id: Date.now(),
-      nome: produto.nome.trim(),
-      precoCusto: custo,
-      precoFinal: final
-    };
-
-    const atualizado = [novo, ...produtos];
-    setProdutos(atualizado);
-    localStorage.setItem("produtos", JSON.stringify(atualizado));
+    if (!produto.nome || !produto.precoCusto || !produto.precoFinal) return;
+    setProdutos([...produtos, produto]);
     setProduto({ nome: "", precoCusto: "", precoFinal: "" });
-    alert("Produto cadastrado com sucesso!");
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>📦 Cadastro de Produto</h2>
+    <div style={styles.page}>
+      <div style={styles.wrapper}>
+        <div style={styles.card}>
+          <h2 style={styles.title}>Cadastro de Produto</h2>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        {/* Campo Nome */}
-        <label style={styles.label}>
-          Nome do Produto:
-          <input
-            style={styles.input}
-            type="text"
-            name="nome"
-            value={produto.nome}
-            onChange={handleChange}
-            placeholder="Ex: Camiseta preta básica"
-            required
-          />
-        </label>
+          <form onSubmit={handleSubmit} style={styles.form}>
+            <input
+              type="text"
+              name="nome"
+              value={produto.nome}
+              onChange={handleChange}
+              style={styles.input}
+              placeholder="Nome do Produto"
+            />
+            <input
+              type="number"
+              name="precoCusto"
+              value={produto.precoCusto}
+              onChange={handleChange}
+              style={styles.input}
+              placeholder="Preço de Custo"
+            />
+            <input
+              type="number"
+              name="precoFinal"
+              value={produto.precoFinal}
+              onChange={handleChange}
+              style={styles.input}
+              placeholder="Preço Final"
+            />
+            <button type="submit" style={styles.button}>
+              Salvar Produto
+            </button>
+          </form>
 
-        {/* Campo Preço de Custo */}
-        <label style={styles.label}>
-          Preço de Custo (R$):
-          <input
-            style={styles.input}
-            type="number"
-            name="precoCusto"
-            value={produto.precoCusto}
-            onChange={handleChange}
-            step="0.01"
-            placeholder="Ex: 25.90"
-            required
-          />
-        </label>
+          <Link to="/" style={styles.link}>
+            Voltar para Home
+          </Link>
+        </div>
 
-        {/* Campo Preço Final */}
-        <label style={styles.label}>
-          Preço Final de Venda (R$):
-          <input
-            style={styles.input}
-            type="number"
-            name="precoFinal"
-            value={produto.precoFinal}
-            onChange={handleChange}
-            step="0.01"
-            placeholder="Ex: 49.90"
-            required
-          />
-        </label>
-
-        <button type="submit" style={styles.button}>
-          ✅ Cadastrar Produto
-        </button>
-      </form>
-
-      <hr style={{ margin: "20px 0" }} />
-
-      <h3>📝 Produtos cadastrados ({produtos.length})</h3>
-      {produtos.length === 0 ? (
-        <p>Nenhum produto cadastrado ainda.</p>
-      ) : (
-        <ul style={styles.lista}>
-          {produtos.map((p) => (
-            <li key={p.id} style={styles.item}>
-              <strong>{p.nome}</strong>  
-              <br />
-              Custo: <span style={{ color: "red" }}>R$ {p.precoCusto.toFixed(2)}</span>  
-              {" → "}
-              Final: <span style={{ color: "green" }}>R$ {p.precoFinal.toFixed(2)}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+        {produtos.length > 0 && (
+          <div style={styles.card}>
+            <h2 style={styles.title}>Produtos Cadastrados</h2>
+            <ul style={styles.list}>
+              {produtos.map((p, i) => (
+                <li key={i} style={styles.listItem}>
+                  <strong>{p.nome}</strong> — Custo: R${p.precoCusto} | Final: R${p.precoFinal}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    maxWidth: 600,
-    margin: "24px auto",
-    padding: 20,
-    borderRadius: 10,
-    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-    background: "#fff",
-    fontFamily: "Segoe UI, Roboto, sans-serif"
+  page: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh", // ocupa tela toda
+    background: "#f5f7fa",
   },
-  title: { marginBottom: 20, textAlign: "center", color: "#2b6cb0" },
-  form: { display: "grid", gap: 14 },
-  label: { display: "flex", flexDirection: "column", fontWeight: 500 },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "24px",
+    width: "100%",
+    maxWidth: "800px",
+  },
+  card: {
+    width: "360px",
+    background: "#fff",
+    padding: "24px",
+    borderRadius: "12px",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
+    textAlign: "center",
+  },
+  title: {
+    marginBottom: "16px",
+    color: "#2b6cb0",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
   input: {
-    padding: "10px",
-    borderRadius: 6,
+    padding: "10px 12px",
+    borderRadius: "6px",
     border: "1px solid #ccc",
-    marginTop: 6,
-    fontSize: 15
+    fontSize: "14px",
+    textAlign: "center",
   },
   button: {
-    padding: "12px",
-    borderRadius: 6,
-    border: "none",
+    padding: "12px 16px",
+    borderRadius: "6px",
     background: "#2b6cb0",
     color: "#fff",
+    border: "none",
+    fontWeight: "bold",
     cursor: "pointer",
-    fontWeight: 600,
-    fontSize: 16,
-    marginTop: 8
   },
-  lista: { listStyle: "none", paddingLeft: 0 },
-  item: {
-    marginBottom: 12,
+  link: {
+    marginTop: "12px",
+    display: "inline-block",
+    color: "#2b6cb0",
+    textDecoration: "none",
+    fontWeight: "bold",
+  },
+  list: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+  },
+  listItem: {
+    background: "#edf2f7",
     padding: "10px",
-    borderRadius: 6,
-    background: "black",
-    border: "1px solid #e2e8f0"
-  }
+    borderRadius: "6px",
+    marginBottom: "8px",
+  },
 };
