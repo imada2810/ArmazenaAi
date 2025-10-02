@@ -31,8 +31,10 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh", // garante que ocupa a tela toda
-    background: "#f5f7fa",
+    height: "100vh",   // ocupa 100% da altura da tela
+    width: "100vw",    // ocupa 100% da largura da tela
+    margin: 0,
+    background: "#ffffff", // fundo branco
   },
   card: {
     background: "#fff",

@@ -17,9 +17,15 @@ export default function CadastroProduto() {
     setProduto({ nome: "", precoCusto: "", precoFinal: "" });
   };
 
+  const handleDelete = (index) => {
+    const novosProdutos = produtos.filter((_, i) => i !== index);
+    setProdutos(novosProdutos);
+  };
+
   return (
     <div style={styles.page}>
       <div style={styles.wrapper}>
+        {/* Card de cadastro */}
         <div style={styles.card}>
           <h2 style={styles.title}>Cadastro de Produto</h2>
 
@@ -58,18 +64,26 @@ export default function CadastroProduto() {
           </Link>
         </div>
 
-        {produtos.length > 0 && (
-          <div style={styles.card}>
-            <h2 style={styles.title}>Produtos Cadastrados</h2>
+        {/* Card de listagem */}
+        <div style={styles.card}>
+          <h2 style={styles.title}>Produtos Cadastrados</h2>
+          {produtos.length === 0 ? (
+            <p style={{ color: "#333" }}>Nenhum produto cadastrado.</p>
+          ) : (
             <ul style={styles.list}>
               {produtos.map((p, i) => (
                 <li key={i} style={styles.listItem}>
-                  <strong>{p.nome}</strong> — Custo: R${p.precoCusto} | Final: R${p.precoFinal}
+                  <div style={{ flex: 1, color: "#111" }}>
+                    <strong>{p.nome}</strong> — Custo: R${p.precoCusto} | Final: R${p.precoFinal}
+                  </div>
+                  <button onClick={() => handleDelete(i)} style={styles.deleteButton}>
+                    Excluir
+                  </button>
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
@@ -80,19 +94,21 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh", // ocupa tela toda
-    background: "#f5f7fa",
+    height: "100vh",
+    width: "100vw",
+    margin: 0,
+    background: "#ffffff",
   },
   wrapper: {
     display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: "24px",
     width: "100%",
-    maxWidth: "800px",
+    maxWidth: "900px",
   },
   card: {
-    width: "360px",
+    flex: 1,
     background: "#fff",
     padding: "24px",
     borderRadius: "12px",
@@ -137,9 +153,23 @@ const styles = {
     margin: 0,
   },
   listItem: {
-    background: "#edf2f7",
+    background: "#edf2f7", // fundo cinza claro
     padding: "10px",
     borderRadius: "6px",
     marginBottom: "8px",
+    textAlign: "left",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  deleteButton: {
+    padding: "6px 10px",
+    borderRadius: "6px",
+    background: "#e53e3e",
+    color: "#fff",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "12px",
+    fontWeight: "bold",
   },
 };
